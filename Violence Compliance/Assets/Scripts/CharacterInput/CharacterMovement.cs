@@ -16,15 +16,26 @@ public class CharacterMovement : MonoBehaviour {
 
     void FixedUpdate() {
         MoveCharacter();
+        /*if (Input.GetKey(KeyCode.LeftShift))
+            speed = 20;
 
-        if (Input.GetKeyDown(KeyCode.LeftShift)) speed *= 2;
-        else if (Input.GetKeyUp(KeyCode.LeftShift)) speed /= 2;
+        else
+            speed = 5;*/
     }
 
     private void Update() {
         RotateCharacterWithMouse();
 
         mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
+
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            UIManager.Instance.ShowGameInfo();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.Quit();
+        }
+            
     }
 
     void MoveCharacter() {
@@ -39,5 +50,10 @@ public class CharacterMovement : MonoBehaviour {
     void RotateCharacterWithMouse() {
         Quaternion rotation = Quaternion.LookRotation(mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position, transform.TransformDirection(-Vector3.forward));
         transform.rotation = new Quaternion(0, 0, rotation.z, rotation.w);
+    }
+
+    public void StopCharacterInput() {
+        rb.velocity = Vector2.zero;
+        enabled = false;
     }
 }

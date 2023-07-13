@@ -7,6 +7,8 @@ public class LaserBeam : MonoBehaviour {
     private int speed;
     private float lifeTime;
 
+    public float damage;
+
     // Start is called before the first frame update
     private void Start() {
         lifeTime = 5f;
@@ -14,16 +16,23 @@ public class LaserBeam : MonoBehaviour {
     }
 
     private void Update() {
-        if (lifeTime > 0f) lifeTime -= Time.deltaTime;
-        else DestroyObject();
+        HandleLaserBeamLifetime();
 
         transform.Translate(transform.up * speed * Time.deltaTime, Space.World);
+    }
+
+    private void HandleLaserBeamLifetime() {
+        if (lifeTime > 0f)
+            lifeTime -= Time.deltaTime;
+
+        else
+            DestroyObject();
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if(collision.gameObject.tag == "Asteroid") {
             DestroyObject();
-            collision.gameObject.GetComponent<AsteroidBehaviour>().TakeDamage(1);
+            collision.gameObject.GetComponent<AsteroidBehaviour>().TakeDamage(damage);
         }
     }
 

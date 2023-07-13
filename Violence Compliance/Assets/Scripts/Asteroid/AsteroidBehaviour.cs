@@ -7,8 +7,9 @@ public class AsteroidBehaviour : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
     private Animator animator;
 
-    private int health;
     private int movementSpeed, rotationSpeed, lifeTime;
+    private float health;
+    private float startingScale;
     private Vector3 moveDir;
 
     [SerializeField] private Sprite[] decayAnimation;
@@ -28,8 +29,10 @@ public class AsteroidBehaviour : MonoBehaviour {
 
         movementSpeed = Random.Range(1, 4);
         rotationSpeed = Random.Range(30, 60);
+        startingScale = Random.Range(0.5f, 1.5f);
 
         moveDir = new Vector3(Random.Range(-1f, 2f), Random.Range(-1f, 2f), 0);
+        transform.localScale = new Vector3(startingScale, startingScale, 1);
     }
 
     private void Update() {
@@ -37,7 +40,7 @@ public class AsteroidBehaviour : MonoBehaviour {
         transform.RotateAround(transform.position, Vector3.forward, rotationSpeed * Time.deltaTime);
     }
 
-    public void TakeDamage(int damage) {
+    public void TakeDamage(float damage) {
         health -= damage;
 
         CheckHealthStatus();
@@ -55,7 +58,7 @@ public class AsteroidBehaviour : MonoBehaviour {
 
                 break;
 
-            case 0:
+            case <= 0:
                 animator.enabled = true;
                 UIManager.Instance.UpdateScore();
 
