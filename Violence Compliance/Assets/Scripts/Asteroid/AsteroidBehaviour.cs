@@ -6,6 +6,7 @@ public class AsteroidBehaviour : MonoBehaviour {
 
     private SpriteRenderer spriteRenderer;
     private Animator animator;
+    private AudioSource audioSource;
 
     private int movementSpeed, rotationSpeed, lifeTime;
     private float health;
@@ -13,11 +14,13 @@ public class AsteroidBehaviour : MonoBehaviour {
     private Vector3 moveDir;
 
     [SerializeField] private Sprite[] decayAnimation;
+    [SerializeField] private AudioClip asteroidHit, asteroidDestroy;
 
     // Start is called before the first frame update
     void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
+        audioSource = GetComponent<AudioSource>();
 
         InitializeAsteroidData();
         StartCoroutine(AsteroidLifetime());
@@ -42,6 +45,7 @@ public class AsteroidBehaviour : MonoBehaviour {
 
     public void TakeDamage(float damage) {
         health -= damage;
+        PlayAudio(asteroidHit);
 
         CheckHealthStatus();
     }
@@ -59,21 +63,36 @@ public class AsteroidBehaviour : MonoBehaviour {
                 break;
 
             case <= 0:
-                animator.enabled = true;
+                SetupForDestroy();
                 UIManager.Instance.UpdateScore();
 
                 break;
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision) {
-        if(collision.gameObject.tag == "Asteroid") {
-            animator.enabled = true;
-        }
+    private void PlayAudio(AudioClip audioClip) {
+        float newPitch = Random.Range(0.5f, 2f);
+        audioSource.pitch = newPitch;
+
+        audioSource.PlayOneShot(audioClip);
     }
 
-    private void DestroyAsteroidObject() => Destroy(gameObject);
-    private void DisableAsteroidCollider() => GetComponent<BoxCollider2D>().enabled = false;
+    private void SetupForDestroy() {
+        animator.enabled = true;
+        PlayAudio(asteroidDestroy);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision) {
+        if(collision.gameObject.tag == "Asteroid") {
+            SetupForDestroy();
+        }
+
+        else if(collision.gameObject.tag == "Player") {
+            SetupForDestroy();
+            collision.gameObject.GetComponent<CharacterStatus>().TakeDamage(0.5f);
+            UIManager.Instance.UpdateScore();
+        }
+    }
 
     private IEnumerator AsteroidLifetime() {
         while (lifeTime > 0) {
@@ -82,8 +101,12 @@ public class AsteroidBehaviour : MonoBehaviour {
             lifeTime--;
         }
 
-        animator.enabled = true;
+        SetupForDestroy();
 
         yield break;
     }
+
+    private void DestroyAsteroidObject() => Destroy(gameObject);
+
+    private void DisableAsteroidCollider() => GetComponent<BoxCollider2D>().enabled = false;
 }

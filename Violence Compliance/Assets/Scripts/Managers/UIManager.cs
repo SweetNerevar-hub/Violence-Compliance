@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,14 +6,19 @@ public class UIManager : MonoBehaviour {
 
     public static UIManager Instance;
 
-    [SerializeField] GameObject UIParent, fadeScreen;
+    [Header("Gameplay Variables")]
+    [SerializeField] Transform gameplayHUD;
+    [SerializeField] Transform infoHUD;
     [SerializeField] Transform player;
-    [SerializeField] Transform beamChargeBar;
-    [SerializeField] Text scoreText, gameTimerText;
+    [SerializeField] GameObject fadeScreen;
 
-    private int score, gameTimer;
+    // [0] Score Text, [1] Game Timer/Lifeforms Text, [2] Mission Report Text
+    [SerializeField] Text[] UIText;
+    
+    [SerializeField] private int gameTimer;
     private bool isShowingInfo;
-    private float barWidthDivideByThree;
+
+    public int score;
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -27,23 +31,25 @@ public class UIManager : MonoBehaviour {
     }
 
     private void Start() {
-        gameTimer = 265;
-        isShowingInfo = false;
-        
-        barWidthDivideByThree = beamChargeBar.localScale.x / 3;
-        StartCoroutine(UpdateGameTimer());
+        StartCoroutine(FadeGameIn());
+
+        Invoke("StartGameTimer", 0.01f);
     }
 
     private void Update() {
-        UIParent.transform.GetChild(0).position = new Vector2(player.position.x, player.position.y + 1);
+        if (gameplayHUD == null) {
+            return;
+        }
+
+        else gameplayHUD.position = player.transform.position;
     }
 
     public void UpdateScore() {
         score++;
-        scoreText.text = "Score: " + score;
+        UIText[0].text = "Score: " + score;
     }
 
-    public void ShowGameInfo() {
+    /*public void ShowGameInfo() {
         if (!isShowingInfo) {
             UIParent.SetActive(true);
             isShowingInfo = true;
@@ -53,46 +59,48 @@ public class UIManager : MonoBehaviour {
             UIParent.SetActive(false);
             isShowingInfo = false;
         }
-    }
+    }*/
 
-    public void UpdateBeamChargeBar(float chargeValue, float timeBetweenShots) {
-        Vector2 barSize = beamChargeBar.localScale;
-        beamChargeBar.position = new Vector2(player.position.x - 1.12f, player.position.y - 1f);
-
-        if (timeBetweenShots == 0) {
-            barSize = new Vector2(chargeValue * barWidthDivideByThree, barSize.y);
+    void StartGameTimer() {
+        if(SceneChangeManager.Instance.currentScene == 1) {
+            StartCoroutine(UpdateGameTimer());
         }
-        
-        else {
-            barSize = new Vector2(timeBetweenShots * barWidthDivideByThree, barSize.y);
-        }
-
-        beamChargeBar.localScale = barSize;
-    }
-
-    public void ChangeUIOnGameEnd() {
-        int lifeformsDestroyed = Random.Range(score * 10, score * 100);
-
-        gameTimerText.text = "Lifeforms Destroyed: " + lifeformsDestroyed;
-        UIParent.SetActive(true);
-        StartCoroutine(FadeGameOut());
     }
 
     IEnumerator UpdateGameTimer() {
-        while(gameTimer > 0) {
+        while (gameTimer > 0) {
             yield return new WaitForSeconds(1);
 
             gameTimer--;
-            gameTimerText.text = "Time Remaining: " + gameTimer.ToString();
+            UIText[1].text = "Time Remaining: " + gameTimer.ToString();
         }
 
         EventManager.Instance.onGameEnd.Invoke();
     }
 
+    IEnumerator FadeGameIn() {
+        if(fadeScreen.GetComponent<Image>().color.a < 1f) {
+            fadeScreen.GetComponent<Image>().color = new Color(0, 0, 0, 1);
+        }
+
+        float a = fadeScreen.GetComponent<Image>().color.a;
+
+        while (a > 0f) {
+            a -= 0.005f;
+            fadeScreen.GetComponent<Image>().color = new Color(0, 0, 0, a);
+
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        fadeScreen.GetComponent<Image>().raycastTarget = false;
+    }
+
     IEnumerator FadeGameOut() {
         float a = fadeScreen.GetComponent<Image>().color.a;
 
-        yield return new WaitForSeconds(10);
+        if(SceneChangeManager.Instance.currentScene == 1) {
+            yield return new WaitForSeconds(5);
+        }
 
         while (a < 1f) {
             a += 0.005f;
@@ -101,6 +109,34 @@ public class UIManager : MonoBehaviour {
             yield return new WaitForSeconds(0.01f);
         }
 
-        Application.Quit();
+        SceneChangeManager.Instance.ChangeScene();
     }
+
+    #region Game End Functions
+
+    public void ChangeUIOnGameEnd() {
+        int lifeformsDestroyed = Random.Range(score * 10, score * 100);
+
+        UIText[0].GetComponent<RectTransform>().localPosition = new Vector2(0, 175);
+        UIText[1].GetComponent<RectTransform>().localPosition = new Vector2(0, 100);
+        UIText[2].gameObject.SetActive(true);
+        infoHUD.gameObject.SetActive(true);
+        gameplayHUD.gameObject.SetActive(false);
+
+        UIText[1].text = "Lifeforms Destroyed: " + lifeformsDestroyed;
+        StartCoroutine(FadeGameOut());
+    }
+
+    public void OnGameEnd() {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (GameObject item in enemies) {
+            item.GetComponent<Enemy>().StopEnemyShooting();
+        }
+    }
+
+    #endregion
+
+    public void CallSceneFadeOut() => StartCoroutine(FadeGameOut());
+
 }
