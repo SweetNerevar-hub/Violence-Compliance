@@ -37,11 +37,14 @@ public class UIManager : MonoBehaviour {
     }
 
     private void Update() {
-        if (gameplayHUD == null) {
+        if (SceneChangeManager.Instance.currentScene == 0) {
             return;
         }
 
-        else gameplayHUD.position = player.transform.position;
+        else {
+            gameplayHUD.position = player.transform.position;
+            infoHUD.position = new Vector2(player.transform.position.x, player.transform.position.y + 1);
+        }
     }
 
     public void UpdateScore() {
@@ -116,7 +119,8 @@ public class UIManager : MonoBehaviour {
 
     public void ChangeUIOnGameEnd() {
         int lifeformsDestroyed = Random.Range(score * 10, score * 100);
-
+        gameTimer = 0;
+        
         UIText[0].GetComponent<RectTransform>().localPosition = new Vector2(0, 175);
         UIText[1].GetComponent<RectTransform>().localPosition = new Vector2(0, 100);
         UIText[2].gameObject.SetActive(true);
