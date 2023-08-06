@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AsteroidBehaviour : MonoBehaviour {
@@ -8,16 +7,19 @@ public class AsteroidBehaviour : MonoBehaviour {
     private Animator animator;
     private AudioSource audioSource;
 
-    private int movementSpeed, rotationSpeed, lifeTime;
+    [SerializeField] private Sprite[] decayAnimation;
+    [SerializeField] private AudioClip asteroidHit;
+    [SerializeField] private AudioClip asteroidDestroy;
+
+    private int movementSpeed;
+    private int rotationSpeed;
+    private int lifeTime;
     private float health;
     private float startingScale;
     private Vector3 moveDir;
 
-    [SerializeField] private Sprite[] decayAnimation;
-    [SerializeField] private AudioClip asteroidHit, asteroidDestroy;
-
     // Start is called before the first frame update
-    void Start() {
+    private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
@@ -70,16 +72,16 @@ public class AsteroidBehaviour : MonoBehaviour {
         }
     }
 
+    private void SetupForDestroy() {
+        animator.enabled = true;
+        PlayAudio(asteroidDestroy);
+    }
+
     private void PlayAudio(AudioClip audioClip) {
         float newPitch = Random.Range(0.5f, 2f);
         audioSource.pitch = newPitch;
 
         audioSource.PlayOneShot(audioClip);
-    }
-
-    private void SetupForDestroy() {
-        animator.enabled = true;
-        PlayAudio(asteroidDestroy);
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
@@ -88,9 +90,14 @@ public class AsteroidBehaviour : MonoBehaviour {
         }
 
         else if(collision.gameObject.tag == "Player") {
+            CharacterStatus playerStatus = collision.gameObject.GetComponent<CharacterStatus>();
+
+            playerStatus.TakeDamage(0.5f);
+            playerStatus.hitAsteroidAmount++;
             SetupForDestroy();
-            collision.gameObject.GetComponent<CharacterStatus>().TakeDamage(0.5f);
+
             UIManager.Instance.UpdateScore();
+            EventManager.Instance.Event_AsteroidHitPlayer(playerStatus.hitAsteroidAmount);
         }
     }
 

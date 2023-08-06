@@ -6,18 +6,15 @@ public class UIManager : MonoBehaviour {
 
     public static UIManager Instance;
 
-    [Header("Gameplay Variables")]
-    [SerializeField] Transform gameplayHUD;
-    [SerializeField] Transform infoHUD;
-    [SerializeField] Transform player;
-    [SerializeField] GameObject fadeScreen;
-
     // [0] Score Text, [1] Game Timer/Lifeforms Text, [2] Mission Report Text
-    [SerializeField] Text[] UIText;
-    
-    [SerializeField] private int gameTimer;
-    private bool isShowingInfo;
+    [SerializeField] private Text[] UIText;
 
+    // [0] GameplayHUD, [1] InfoHUD, [2] DialogueHUD
+    [SerializeField] private Transform[] HUD;
+    [SerializeField] private Transform player;
+    [SerializeField] private GameObject fadeScreen;
+
+    public int gameTimer;
     public int score;
 
     private void Awake() {
@@ -33,41 +30,20 @@ public class UIManager : MonoBehaviour {
     private void Start() {
         StartCoroutine(FadeGameIn());
 
-        Invoke("StartGameTimer", 0.01f);
-    }
-
-    private void Update() {
-        if (SceneChangeManager.Instance.currentScene == 0) {
-            return;
+        if(SceneChangeManager.Instance.currentScene == 0) {
+            Cursor.visible = true;
         }
 
         else {
-            gameplayHUD.position = player.transform.position;
-            infoHUD.position = new Vector2(player.transform.position.x, player.transform.position.y + 1);
+            StartCoroutine(UpdateGameTimer());
         }
     }
 
     public void UpdateScore() {
         score++;
         UIText[0].text = "Score: " + score;
-    }
 
-    /*public void ShowGameInfo() {
-        if (!isShowingInfo) {
-            UIParent.SetActive(true);
-            isShowingInfo = true;
-        }
-
-        else {
-            UIParent.SetActive(false);
-            isShowingInfo = false;
-        }
-    }*/
-
-    void StartGameTimer() {
-        if(SceneChangeManager.Instance.currentScene == 1) {
-            StartCoroutine(UpdateGameTimer());
-        }
+        EventManager.Instance.Event_UpdateScore(score);
     }
 
     IEnumerator UpdateGameTimer() {
@@ -78,7 +54,7 @@ public class UIManager : MonoBehaviour {
             UIText[1].text = "Time Remaining: " + gameTimer.ToString();
         }
 
-        EventManager.Instance.onGameEnd.Invoke();
+        EventManager.Instance.onGameEnd_TimerEnded.Invoke();
     }
 
     IEnumerator FadeGameIn() {
@@ -101,8 +77,8 @@ public class UIManager : MonoBehaviour {
     IEnumerator FadeGameOut() {
         float a = fadeScreen.GetComponent<Image>().color.a;
 
-        if(SceneChangeManager.Instance.currentScene == 1) {
-            yield return new WaitForSeconds(5);
+        if(SceneChangeManager.Instance.currentScene == 1 && gameTimer == 0) {
+            yield return new WaitForSeconds(10);
         }
 
         while (a < 1f) {
@@ -119,19 +95,19 @@ public class UIManager : MonoBehaviour {
 
     public void ChangeUIOnGameEnd() {
         int lifeformsDestroyed = Random.Range(score * 10, score * 100);
-        gameTimer = 0;
-        
+
         UIText[0].GetComponent<RectTransform>().localPosition = new Vector2(0, 175);
         UIText[1].GetComponent<RectTransform>().localPosition = new Vector2(0, 100);
-        UIText[2].gameObject.SetActive(true);
-        infoHUD.gameObject.SetActive(true);
-        gameplayHUD.gameObject.SetActive(false);
-
         UIText[1].text = "Lifeforms Destroyed: " + lifeformsDestroyed;
+        UIText[2].gameObject.SetActive(true);
+        HUD[1].gameObject.SetActive(true);
+        HUD[0].gameObject.SetActive(false);
+
+        StopEnemyShootingOnGameEnd();
         StartCoroutine(FadeGameOut());
     }
 
-    public void OnGameEnd() {
+    public void StopEnemyShootingOnGameEnd() {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
         foreach (GameObject item in enemies) {

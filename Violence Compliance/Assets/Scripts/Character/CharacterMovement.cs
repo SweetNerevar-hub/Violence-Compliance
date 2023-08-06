@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class CharacterMovement : MonoBehaviour {
 
-    Rigidbody2D rb;
+    private Rigidbody2D rb;
 
     [SerializeField] private Camera mainCamera;
+    [SerializeField] private float cameraSmoothing;
 
-    int speed;
+    private int speed;
+    private Vector3 cameraVelocity = Vector3.zero;
 
     // Start is called before the first frame update
     void Start() {
@@ -17,27 +19,24 @@ public class CharacterMovement : MonoBehaviour {
         speed = 5;
     }
 
-    void FixedUpdate() {
-        MoveCharacter();
-        /*if (Input.GetKey(KeyCode.LeftShift))
-            speed = 20;
-
-        else
-            speed = 5;*/
-    }
+    void FixedUpdate() => MoveCharacter();
 
     private void Update() {
         RotateCharacterWithMouse();
 
-        mainCamera.transform.position = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
+        /*if (Input.GetKeyDown(KeyCode.LeftShift))
+            speed = 10;
 
-        /*if (Input.GetKeyDown(KeyCode.Space)) {
-            UIManager.Instance.ShowGameInfo();
+        else if (Input.GetKeyUp(KeyCode.LeftShift))
+            speed = 5;*/
+
+        Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, mainCamera.transform.position.z);
+
+        mainCamera.transform.position = Vector3.SmoothDamp(mainCamera.transform.position, targetPosition, ref cameraVelocity, cameraSmoothing);
+
+        /*if (Input.GetKeyDown(KeyCode.Escape)) {
+            UIManager.Instance.CallSceneFadeOut();
         }*/
-
-        if (Input.GetKeyDown(KeyCode.Escape)) {
-            Application.Quit();
-        }
     }
 
     void MoveCharacter() {

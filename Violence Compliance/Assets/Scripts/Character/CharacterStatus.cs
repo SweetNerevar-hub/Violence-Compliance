@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class CharacterStatus : MonoBehaviour {
 
-    SpriteRenderer spriteRenderer;
-    AudioSource audioSource;
+    private SpriteRenderer spriteRenderer;
+    private AudioSource audioSource;
 
-    [SerializeField] Transform healthBar, beamChargeBar;
-    [SerializeField] AudioClip shipExplosion;
+    [SerializeField] private Transform healthBar, beamChargeBar;
+    [SerializeField] private AudioClip shipExplosion;
 
-    float health;
-    float healthBarUnit;
-    float beamChargeBarUnit;
+    private float health;
+    private float healthBarUnit;
+    private float beamChargeBarUnit;
+
+    public int hitAsteroidAmount;
 
     private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -49,14 +51,13 @@ public class CharacterStatus : MonoBehaviour {
     }
 
     private IEnumerator PlayerDeath() {
-        EventManager.Instance.onGameEnd.Invoke();
+        EventManager.Instance.onGameEnd_PlayerDied.Invoke();
 
-        GetComponent<BoxCollider2D>().enabled = false;
+        GetComponent<EdgeCollider2D>().enabled = false;
 
         float timer = 1f;
         float decayAmount = 0.2f;
 
-        print("You Died!");
         audioSource.clip = null;
         audioSource.PlayOneShot(shipExplosion);
 
@@ -73,5 +74,7 @@ public class CharacterStatus : MonoBehaviour {
 
             timer -= decayAmount;
         }
+
+        UIManager.Instance.CallSceneFadeOut();
     }
 }

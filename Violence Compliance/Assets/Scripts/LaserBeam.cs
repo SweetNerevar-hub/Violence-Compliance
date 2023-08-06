@@ -11,13 +11,14 @@ public class LaserBeam : MonoBehaviour {
     private float lifeTime;
 
     public float damage;
+    public bool isCharged;
 
     // Start is called before the first frame update
     private void Start() {
         lifeTime = 5f;
         speed = 20;
 
-        if(!playerShotThis) {
+        if (!playerShotThis) {
             SetDirectionForEnemyBeam();
         }
     }
@@ -44,8 +45,15 @@ public class LaserBeam : MonoBehaviour {
 
     private void OnCollisionEnter2D(Collision2D collision) {
         if(collision.gameObject.tag == "Asteroid" && playerShotThis) {
-            DestroyObject();
             collision.gameObject.GetComponent<AsteroidBehaviour>().TakeDamage(damage);
+
+            if (!isCharged) {
+                DestroyObject();
+            }
+            
+            else {
+                return;
+            }
         }
 
         else if(collision.gameObject.tag == "Enemy" && playerShotThis) {

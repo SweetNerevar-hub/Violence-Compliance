@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2195246808577531774}
   - component: {fileID: 7179584964007979437}
   - component: {fileID: 4668115562124764693}
-  - component: {fileID: 8561770172784794989}
+  - component: {fileID: 8422872473431228223}
   - component: {fileID: 7785594927621272212}
   - component: {fileID: 6684293967918856397}
   - component: {fileID: 1041297369654812577}
@@ -35,7 +35,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7179584964007979437
 SpriteRenderer:
@@ -116,8 +116,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &8561770172784794989
-BoxCollider2D:
+--- !u!68 &8422872473431228223
+EdgeCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -149,18 +149,21 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.56, y: 2.56}
-    newSize: {x: 2.56, y: 2.56}
-    adaptiveTilingThreshold: 0.5
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2.56, y: 2.56}
   m_EdgeRadius: 0
+  m_Points:
+  - {x: 0.56363535, y: 1.1911238}
+  - {x: 1.1694126, y: 0.5386735}
+  - {x: 1.1663828, y: -0.56170475}
+  - {x: 0.56698895, y: -1.1668192}
+  - {x: -0.5813842, y: -1.161204}
+  - {x: -1.1725292, y: -0.5632766}
+  - {x: -1.1717863, y: 0.5643891}
+  - {x: -0.5654869, y: 1.1927944}
+  - {x: 0.56363535, y: 1.1911238}
+  m_AdjacentStartPoint: {x: 0, y: 0}
+  m_AdjacentEndPoint: {x: 0, y: 0}
+  m_UseAdjacentStartPoint: 0
+  m_UseAdjacentEndPoint: 0
 --- !u!95 &7785594927621272212
 Animator:
   serializedVersion: 5
@@ -294,6 +297,7 @@ MonoBehaviour:
   - {fileID: -1113796403, guid: 03878f850cee20b4690f54d5716f9f38, type: 3}
   - {fileID: -2094009940, guid: 03878f850cee20b4690f54d5716f9f38, type: 3}
   - {fileID: 401050374, guid: 03878f850cee20b4690f54d5716f9f38, type: 3}
-  PH_beam: {fileID: 6755592255176245580, guid: 0f7730efd0677ee44a6ef5c6c6aa3674, type: 3}
+  enemyBeam: {fileID: 6755592255176245580, guid: 0f7730efd0677ee44a6ef5c6c6aa3674, type: 3}
   laserBeamShot: {fileID: 8300000, guid: 1238b58d56eb56e468b6482e4145a1b7, type: 3}
   shipExplosion: {fileID: 8300000, guid: 1fb68cbb6346d2c41a022dba13dcab0f, type: 3}
+  health: 5

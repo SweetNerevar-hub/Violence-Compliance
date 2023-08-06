@@ -1,35 +1,34 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour {
 
-    SpriteRenderer spriteRenderer;
-    Animator animator;
-    AudioSource audioSource;
+    private SpriteRenderer spriteRenderer;
+    private Animator animator;
+    private AudioSource audioSource;
 
-    [SerializeField] Sprite[] shipDamageSprites;
-    [SerializeField] GameObject PH_beam;
-    [SerializeField] AudioClip laserBeamShot, shipExplosion;
+    [SerializeField] private Sprite[] shipDamageSprites;
+    [SerializeField] private GameObject enemyBeam;
+    [SerializeField] private AudioClip laserBeamShot, shipExplosion;
+    [SerializeField] private float health;
 
-    GameObject player;
+    private GameObject player;
 
-    int movementSpeed;
-
-    float health;
-    float distanceToPlayer;
-    float timeBetweenShots;
-
-    bool isAlive;
+    private int movementSpeed;
+    private float healthInPercentage;
+    private float maxHealth;
+    private float distanceToPlayer;
+    private float timeBetweenShots;
+    private bool isAlive;
 
     private void Start() {
-        spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         player = GameObject.FindGameObjectWithTag("Player");
 
-        health = 3;
         movementSpeed = 3;
+        maxHealth = health;
         isAlive = true;
     }
 
@@ -50,6 +49,7 @@ public class Enemy : MonoBehaviour {
 
     public void TakeDamage(float damage) {
         health -= damage;
+        healthInPercentage = (health / maxHealth) * 100;
 
         UpdateAnimationBasedOnHealth();
     }
@@ -57,11 +57,11 @@ public class Enemy : MonoBehaviour {
     private void EnemyMovementBehaviour() {
         Vector2 playerDirection = player.transform.position - transform.position;
 
-        if (distanceToPlayer > 20f) {
+        if (distanceToPlayer > 15f) {
             movementSpeed = 10;
         }
 
-        if (distanceToPlayer < 7f) {
+        if (distanceToPlayer < 6f) {
             transform.position = Vector2.MoveTowards(transform.position, -playerDirection, movementSpeed * Time.deltaTime);
         }
 
@@ -71,8 +71,8 @@ public class Enemy : MonoBehaviour {
     }
 
     private void Shoot() {
-        GameObject beam = Instantiate(PH_beam, transform.position, Quaternion.identity);
-        beam.name = PH_beam.name;
+        GameObject beam = Instantiate(enemyBeam, transform.position, Quaternion.identity);
+        beam.name = enemyBeam.name;
 
         PlayAudio(laserBeamShot);
 
@@ -90,20 +90,20 @@ public class Enemy : MonoBehaviour {
     }
 
     private void UpdateAnimationBasedOnHealth() {
-        switch (health) {
-            case 2:
+        switch (healthInPercentage) {
+            case < 64 and > 34:
                 animator.enabled = false;
                 spriteRenderer.sprite = shipDamageSprites[0];
 
                 break;
 
-            case 1:
+            case < 34 and > 0:
                 spriteRenderer.sprite = shipDamageSprites[1];
 
                 break;
 
             case <= 0:
-                animator.enabled = false;
+                spriteRenderer.sprite = shipDamageSprites[2];
                 isAlive = false;
 
                 UIManager.Instance.UpdateScore();
@@ -121,7 +121,7 @@ public class Enemy : MonoBehaviour {
     }
 
     private IEnumerator ShipDestruction() {
-        GetComponent<BoxCollider2D>().enabled = false;
+        GetComponent<EdgeCollider2D>().enabled = false;
         PlayAudio(shipExplosion);
 
         float timer = 1f;
