@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterStatus : MonoBehaviour {
@@ -7,7 +6,8 @@ public class CharacterStatus : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
     private AudioSource audioSource;
 
-    [SerializeField] private Transform healthBar, beamChargeBar;
+    [SerializeField] private Transform healthBar;
+    [SerializeField] private Transform beamChargeBar;
     [SerializeField] private AudioClip shipExplosion;
 
     private float health;
@@ -51,7 +51,8 @@ public class CharacterStatus : MonoBehaviour {
     }
 
     private IEnumerator PlayerDeath() {
-        EventManager.Instance.onGameEnd_PlayerDied.Invoke();
+        EventManager.Instance.Event_OnGameEnd(true);
+        UIManager.Instance.gameTimer = -1;
 
         GetComponent<EdgeCollider2D>().enabled = false;
 
@@ -75,6 +76,6 @@ public class CharacterStatus : MonoBehaviour {
             timer -= decayAmount;
         }
 
-        UIManager.Instance.CallSceneFadeOut();
+        ToggleGameFade.Instance.CallSceneFadeOut(1);
     }
 }

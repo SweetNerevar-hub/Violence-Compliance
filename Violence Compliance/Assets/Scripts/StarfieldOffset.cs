@@ -10,8 +10,7 @@ public class StarfieldOffset : MonoBehaviour {
 
     // Update is called once per frame
     void Update(){
-
-        if(SceneChangeManager.Instance.currentScene == 0) {
+        if(SceneChangeManager.Instance.currentScene == 1) {
             material.mainTextureOffset += new Vector2(0, offsetSpeed * Time.deltaTime);
         }
 

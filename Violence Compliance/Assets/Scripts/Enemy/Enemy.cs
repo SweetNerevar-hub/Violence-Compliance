@@ -147,4 +147,5 @@ public class Enemy : MonoBehaviour {
     }
 
     public void StopEnemyShooting() => enabled = false;
+
 }

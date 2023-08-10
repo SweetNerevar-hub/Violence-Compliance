@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,16 +19,16 @@ public class SceneChangeManager : MonoBehaviour {
     }
 
     private void Start() {
-        currentScene = SceneManager.GetActiveScene().buildIndex;
+        EventManager.Instance.onSceneChange += ChangeScene;
     }
 
-    public void ChangeScene() {
-        if(SceneManager.GetActiveScene().buildIndex == 0) {
-            SceneManager.LoadScene(1);
-        }
+    public void ChangeScene(int index) {
+        currentScene = index;
 
-        else {
-            SceneManager.LoadScene(0);
-        }
+        SceneManager.LoadScene(index);
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.onSceneChange -= ChangeScene;
     }
 }

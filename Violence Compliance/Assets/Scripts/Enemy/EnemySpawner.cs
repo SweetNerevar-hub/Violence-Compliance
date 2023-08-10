@@ -6,11 +6,13 @@ public class EnemySpawner : MonoBehaviour {
     [SerializeField] private GameObject[] enemies;
 
     private void Start() {
+        EventManager.Instance.onGameEnd += StopSpawningEnemy;
+
         InvokeRepeating("SpawnEnemy", 5, 5);
     }
 
     private void SpawnEnemy() {
-        int chanceToSpawn = Random.Range(1, 100);
+        int chanceToSpawn = Random.Range(10, 100);
         
         if(chanceToSpawn <= UIManager.Instance.score) {
             EventManager.Instance.Event_EnemySpawned();
@@ -22,5 +24,11 @@ public class EnemySpawner : MonoBehaviour {
         }
     }
 
-    public void StopSpawningEnemy() => enabled = false;
+    public void StopSpawningEnemy(bool x) {
+        enabled = false;
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.onGameEnd -= StopSpawningEnemy;
+    }
 }

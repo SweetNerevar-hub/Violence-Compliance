@@ -13,13 +13,17 @@ public class CharacterMovement : MonoBehaviour {
     private Vector3 cameraVelocity = Vector3.zero;
 
     // Start is called before the first frame update
-    void Start() {
+    private void Start() {
+        EventManager.Instance.onGameEnd += StopCharacterInput;
+
         rb = GetComponent<Rigidbody2D>();
 
         speed = 5;
     }
 
-    void FixedUpdate() => MoveCharacter();
+    private void FixedUpdate() {
+        MoveCharacter();
+    }
 
     private void Update() {
         RotateCharacterWithMouse();
@@ -34,12 +38,12 @@ public class CharacterMovement : MonoBehaviour {
 
         mainCamera.transform.position = Vector3.SmoothDamp(mainCamera.transform.position, targetPosition, ref cameraVelocity, cameraSmoothing);
 
-        /*if (Input.GetKeyDown(KeyCode.Escape)) {
-            UIManager.Instance.CallSceneFadeOut();
-        }*/
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            ToggleGameFade.Instance.CallSceneFadeOut(3);
+        }
     }
 
-    void MoveCharacter() {
+    private void MoveCharacter() {
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
@@ -48,13 +52,17 @@ public class CharacterMovement : MonoBehaviour {
         rb.velocity = moveDir * speed;
     }
 
-    void RotateCharacterWithMouse() {
+    private void RotateCharacterWithMouse() {
         Quaternion rotation = Quaternion.LookRotation(mainCamera.ScreenToWorldPoint(Input.mousePosition) - transform.position, transform.TransformDirection(-Vector3.forward));
         transform.rotation = new Quaternion(0, 0, rotation.z, rotation.w);
     }
 
-    public void StopCharacterInput() {
+    public void StopCharacterInput(bool x) {
         rb.velocity = Vector2.zero;
         enabled = false;
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.onGameEnd -= StopCharacterInput;
     }
 }

@@ -12,7 +12,6 @@ public class UIManager : MonoBehaviour {
     // [0] GameplayHUD, [1] InfoHUD, [2] DialogueHUD
     [SerializeField] private Transform[] HUD;
     [SerializeField] private Transform player;
-    [SerializeField] private GameObject fadeScreen;
 
     public int gameTimer;
     public int score;
@@ -28,9 +27,9 @@ public class UIManager : MonoBehaviour {
     }
 
     private void Start() {
-        StartCoroutine(FadeGameIn());
+        EventManager.Instance.onGameEnd += StopEnemyShooting;
 
-        if(SceneChangeManager.Instance.currentScene == 0) {
+        if(SceneChangeManager.Instance.currentScene != 2) {
             Cursor.visible = true;
         }
 
@@ -54,44 +53,23 @@ public class UIManager : MonoBehaviour {
             UIText[1].text = "Time Remaining: " + gameTimer.ToString();
         }
 
-        EventManager.Instance.onGameEnd_TimerEnded.Invoke();
-    }
-
-    IEnumerator FadeGameIn() {
-        if(fadeScreen.GetComponent<Image>().color.a < 1f) {
-            fadeScreen.GetComponent<Image>().color = new Color(0, 0, 0, 1);
-        }
-
-        float a = fadeScreen.GetComponent<Image>().color.a;
-
-        while (a > 0f) {
-            a -= 0.005f;
-            fadeScreen.GetComponent<Image>().color = new Color(0, 0, 0, a);
-
-            yield return new WaitForSeconds(0.01f);
-        }
-
-        fadeScreen.GetComponent<Image>().raycastTarget = false;
-    }
-
-    IEnumerator FadeGameOut() {
-        float a = fadeScreen.GetComponent<Image>().color.a;
-
-        if(SceneChangeManager.Instance.currentScene == 1 && gameTimer == 0) {
-            yield return new WaitForSeconds(10);
-        }
-
-        while (a < 1f) {
-            a += 0.005f;
-            fadeScreen.GetComponent<Image>().color = new Color(0, 0, 0, a);
-
-            yield return new WaitForSeconds(0.01f);
-        }
-
-        SceneChangeManager.Instance.ChangeScene();
+        player.gameObject.GetComponent<EdgeCollider2D>().enabled = false;
+        EventManager.Instance.Event_OnGameEnd(false);
     }
 
     #region Game End Functions
+
+    public void StopEnemyShooting(bool isPlayerDead) {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
+        foreach (GameObject item in enemies) {
+            item.GetComponent<Enemy>().StopEnemyShooting();
+        }
+
+        if (!isPlayerDead) {
+            ChangeUIOnGameEnd();
+        }
+    }
 
     public void ChangeUIOnGameEnd() {
         int lifeformsDestroyed = Random.Range(score * 10, score * 100);
@@ -103,20 +81,12 @@ public class UIManager : MonoBehaviour {
         HUD[1].gameObject.SetActive(true);
         HUD[0].gameObject.SetActive(false);
 
-        StopEnemyShootingOnGameEnd();
-        StartCoroutine(FadeGameOut());
-    }
-
-    public void StopEnemyShootingOnGameEnd() {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-
-        foreach (GameObject item in enemies) {
-            item.GetComponent<Enemy>().StopEnemyShooting();
-        }
+        ToggleGameFade.Instance.CallSceneFadeOut(3);
     }
 
     #endregion
 
-    public void CallSceneFadeOut() => StartCoroutine(FadeGameOut());
-
+    private void OnDisable() {
+        EventManager.Instance.onGameEnd -= StopEnemyShooting;
+    }
 }

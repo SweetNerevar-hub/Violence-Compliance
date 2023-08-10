@@ -75,6 +75,7 @@ public class Dialogue : MonoBehaviour {
         spriteRenderer.enabled = false;
     }
 
-    private void OnDisable() => EventManager.Instance.onDialoguePrompt -= InitDialogueText;
-
+    private void OnDisable() {
+        EventManager.Instance.onDialoguePrompt -= InitDialogueText;
+    }
 }

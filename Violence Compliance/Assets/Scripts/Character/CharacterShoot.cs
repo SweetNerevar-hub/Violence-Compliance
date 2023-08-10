@@ -18,6 +18,8 @@ public class CharacterShoot : MonoBehaviour {
     private bool isChargingUp;
 
     private void Start() {
+        EventManager.Instance.onGameEnd += StopCharacterShoot;
+
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
         characterStatus = GetComponent<CharacterStatus>();
@@ -128,5 +130,5 @@ public class CharacterShoot : MonoBehaviour {
         audioSource.PlayOneShot(audioClip);
     }
 
-    public void StopCharacterShoot() => enabled = false;
+    public void StopCharacterShoot(bool x) => enabled = false;
 }
