@@ -19,6 +19,8 @@ public class CutscenePrintText : MonoBehaviour {
     }
 
     private IEnumerator DisplayText() {
+        yield return new WaitForEndOfFrame();
+
         string textToPrint = textBody.text;
 
         charactersInText = textToPrint.ToCharArray();
