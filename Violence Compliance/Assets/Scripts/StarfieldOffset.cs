@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StarfieldOffset : MonoBehaviour {
@@ -8,7 +6,6 @@ public class StarfieldOffset : MonoBehaviour {
     [SerializeField] private GameObject player;
     [SerializeField] private float offsetSpeed;    
 
-    // Update is called once per frame
     void Update(){
         if(SceneChangeManager.Instance.currentScene == 1) {
             material.mainTextureOffset += new Vector2(0, offsetSpeed * Time.deltaTime);

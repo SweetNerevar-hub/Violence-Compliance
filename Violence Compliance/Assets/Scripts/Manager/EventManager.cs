@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class EventManager : MonoBehaviour {
 
-    public static EventManager Instance;
+    public static EventManager Instance { get; private set; }
 
     public event Action<string, string> onDialoguePrompt;
     public event Action<bool> onGameEnd;
@@ -11,7 +11,6 @@ public class EventManager : MonoBehaviour {
     public event Action<int> onUpdateScore;
     public event Action<int> onAsteroidHitPlayer;
     public event Action onEnemySpawned;
-    
 
     private void Awake() {
         if(Instance != null && Instance != this) {
@@ -28,6 +27,7 @@ public class EventManager : MonoBehaviour {
     }
 
     public void Event_OnGameEnd(bool isPlayerDead) {
+        Cursor.visible = true;
         onGameEnd?.Invoke(isPlayerDead);
     }
 

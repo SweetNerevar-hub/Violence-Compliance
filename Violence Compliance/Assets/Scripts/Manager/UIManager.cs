@@ -4,13 +4,10 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
 
-    public static UIManager Instance;
+    public static UIManager Instance { get; private set; }
 
-    // [0] Score Text, [1] Game Timer/Lifeforms Text, [2] Mission Report Text
-    [SerializeField] private Text[] UIText;
-
-    // [0] GameplayHUD, [1] InfoHUD, [2] DialogueHUD
-    [SerializeField] private Transform[] HUD;
+    [SerializeField] private Text[] UIText; // [0] Score Text, [1] Game Timer/Lifeforms Text, [2] Mission Report Text
+    [SerializeField] private Transform[] HUD; // [0] GameplayHUD, [1] InfoHUD, [2] DialogueHUD
     [SerializeField] private Transform player;
 
     public int gameTimer;
@@ -18,24 +15,20 @@ public class UIManager : MonoBehaviour {
 
     private void Awake() {
         if (Instance != null && Instance != this) {
-            Destroy(this);
+            Destroy(gameObject);
         }
 
         else {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
     }
 
     private void Start() {
         EventManager.Instance.onGameEnd += StopEnemyShooting;
 
-        if(SceneChangeManager.Instance.currentScene != 2) {
-            Cursor.visible = true;
-        }
-
-        else {
-            StartCoroutine(UpdateGameTimer());
-        }
+        Cursor.visible = false;
+        StartCoroutine(UpdateGameTimer());
     }
 
     public void UpdateScore() {
@@ -53,12 +46,13 @@ public class UIManager : MonoBehaviour {
             UIText[1].text = "Time Remaining: " + gameTimer.ToString();
         }
 
-        player.gameObject.GetComponent<EdgeCollider2D>().enabled = false;
+        player.gameObject.GetComponent<EdgeCollider2D>().enabled = false; // This is to stop asteroids continuing to collide with the player after the game ends
         EventManager.Instance.Event_OnGameEnd(false);
     }
 
     #region Game End Functions
 
+    // Stops the enemies curently in spawned in to stop shooting the player once the game ends
     public void StopEnemyShooting(bool isPlayerDead) {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
 
@@ -71,6 +65,7 @@ public class UIManager : MonoBehaviour {
         }
     }
 
+    // If the player isn't dead when the game ends, then this shows the post-game screen that displays the score and the lifeforms destroyed
     public void ChangeUIOnGameEnd() {
         int lifeformsDestroyed = Random.Range(score * 10, score * 100);
 

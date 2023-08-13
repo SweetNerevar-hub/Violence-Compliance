@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3955202936426599648}
   - component: {fileID: 2733869457419722884}
-  - component: {fileID: 334755477247659184}
   - component: {fileID: 7008655150383395964}
   m_Layer: 0
   m_Name: MusicManager
@@ -26,7 +25,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1544948224170639831}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -130,18 +129,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &334755477247659184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1544948224170639831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4c5fbede96be0c74898a5712a2cd2621, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7008655150383395964
 MonoBehaviour:
   m_ObjectHideFlags: 0

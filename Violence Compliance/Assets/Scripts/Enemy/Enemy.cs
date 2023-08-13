@@ -76,7 +76,7 @@ public class Enemy : MonoBehaviour {
 
         PlayAudio(laserBeamShot);
 
-        timeBetweenShots = Random.Range(1f, 4f);
+        timeBetweenShots = Random.Range(1f, 3f);
     }
 
     private void CheckTimeBetweenShots() {
@@ -146,6 +146,7 @@ public class Enemy : MonoBehaviour {
         Destroy(gameObject);
     }
 
-    public void StopEnemyShooting() => enabled = false;
-
+    public void StopEnemyShooting() {
+        enabled = false;
+    }
 }

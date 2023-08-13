@@ -18,7 +18,6 @@ public class AsteroidBehaviour : MonoBehaviour {
     private float startingScale;
     private Vector3 moveDir;
 
-    // Start is called before the first frame update
     private void Start() {
         spriteRenderer = GetComponent<SpriteRenderer>();
         animator = GetComponent<Animator>();
@@ -73,7 +72,7 @@ public class AsteroidBehaviour : MonoBehaviour {
     }
 
     private void SetupForDestroy() {
-        animator.enabled = true;
+        animator.enabled = true; // Starts the crumble animation
         PlayAudio(asteroidDestroy);
     }
 
@@ -85,6 +84,8 @@ public class AsteroidBehaviour : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
+
+        // If this asteroids hits another asteroid
         if(collision.gameObject.tag == "Asteroid") {
             SetupForDestroy();
         }
@@ -97,7 +98,7 @@ public class AsteroidBehaviour : MonoBehaviour {
             SetupForDestroy();
 
             UIManager.Instance.UpdateScore();
-            EventManager.Instance.Event_AsteroidHitPlayer(playerStatus.hitAsteroidAmount);
+            EventManager.Instance.Event_AsteroidHitPlayer(playerStatus.hitAsteroidAmount); // This sets up General Floyd's dialogue
         }
     }
 
@@ -109,11 +110,11 @@ public class AsteroidBehaviour : MonoBehaviour {
         }
 
         SetupForDestroy();
-
-        yield break;
     }
 
+    // This method is called at the end of the crumble animation
     private void DestroyAsteroidObject() => Destroy(gameObject);
 
+    // This method is called at the beginning of the crumble animation
     private void DisableAsteroidCollider() => GetComponent<BoxCollider2D>().enabled = false;
 }

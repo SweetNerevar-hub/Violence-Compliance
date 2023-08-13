@@ -25,6 +25,7 @@ public class EnemySpawner : MonoBehaviour {
     }
 
     public void StopSpawningEnemy(bool x) {
+        CancelInvoke();
         enabled = false;
     }
 

@@ -25,11 +25,11 @@ public class CharacterShoot : MonoBehaviour {
         characterStatus = GetComponent<CharacterStatus>();
     }
 
-    // Update is called once per frame
     private void Update() {
         CheckTimeBetweenShots();
         HandleShootType();
 
+        // Cancels the charge up
         if (!Input.GetButton("Fire1")) {
             beamChargeTimer = 0f;
             isChargingUp = false;
@@ -78,6 +78,8 @@ public class CharacterShoot : MonoBehaviour {
             isChargingUp = false;
             animator.SetBool("IsCharging", false);
 
+            // Initilises a lot of the data for the beam
+            // Charged beams have a different colour, and will smash through asteroids
             GameObject beam = Instantiate(laserBeam, transform.GetChild(1).position, transform.rotation);
             beam.name = laserBeam.name;
             beam.GetComponent<SpriteRenderer>().color = new Color(1, 1, 0);
@@ -95,6 +97,7 @@ public class CharacterShoot : MonoBehaviour {
     private void RapidFire(float shotCooldown, float damage) {
         PlayAudio(laserBeamShot);
 
+        // Rapid Fire will have a random shot direction relative to where the player is facing
         float randomShotRotation = Random.Range(-25, 25);
         Vector3 rot = new Vector3(transform.rotation.x, transform.rotation.y, transform.rotation.z + randomShotRotation);
 
@@ -130,5 +133,11 @@ public class CharacterShoot : MonoBehaviour {
         audioSource.PlayOneShot(audioClip);
     }
 
-    public void StopCharacterShoot(bool x) => enabled = false;
+    public void StopCharacterShoot(bool x) {
+        enabled = false;
+    }
+
+    private void OnDisable() {
+        EventManager.Instance.onGameEnd -= StopCharacterShoot;
+    }
 }

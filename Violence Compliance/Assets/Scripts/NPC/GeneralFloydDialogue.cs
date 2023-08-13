@@ -46,7 +46,7 @@ public class GeneralFloydDialogue : MonoBehaviour {
             EventManager.Instance.Event_DisplayDialogue(_name, playerFailing[1]);
         }
 
-        else if(_score < 10 && timer == 50) {
+        else if(_score < 15 && timer == 50) {
             EventManager.Instance.Event_DisplayDialogue(_name, playerFailing[2]);
         }
     }
@@ -100,11 +100,12 @@ public class GeneralFloydDialogue : MonoBehaviour {
 
         EventManager.Instance.Event_DisplayDialogue(_name, enemySpawnedDialogue[randomDialogue]);
 
-        StartCoroutine(CanDialogueContinue());
+        StartCoroutine(DialogueDelay());
     }
 
-    private IEnumerator CanDialogueContinue() {
-        int timerBetweenDialogue = 10;
+    // Much like in the Alien Dialogue script, this is to stop Floyd from spamming dialogue when enemies spawn
+    private IEnumerator DialogueDelay() {
+        int timerBetweenDialogue = 20;
         canFloydTalk = false;
         
         while (timerBetweenDialogue > 0) {
@@ -117,11 +118,13 @@ public class GeneralFloydDialogue : MonoBehaviour {
     }
 
     private void CallDialogueOnGameEnd(bool isPlayerDead) {
+        EventManager.Instance.onAsteroidHitPlayer -= PlayerHitByAsteroid;
+
         if (!isPlayerDead && _score >= 10) {
             EventManager.Instance.Event_DisplayDialogue(_name, playerSucceded);
         }
 
-        else if(!isPlayerDead && _score < 10) {
+        else if (!isPlayerDead && _score < 10) {
             EventManager.Instance.Event_DisplayDialogue(_name, playerFailed);
         }
 
@@ -134,6 +137,6 @@ public class GeneralFloydDialogue : MonoBehaviour {
         EventManager.Instance.onUpdateScore -= CheckScore;
         EventManager.Instance.onAsteroidHitPlayer -= PlayerHitByAsteroid;
         EventManager.Instance.onEnemySpawned -= WhenEnemySpawned;
-        EventManager.Instance.onGameEnd += CallDialogueOnGameEnd;
+        EventManager.Instance.onGameEnd -= CallDialogueOnGameEnd;
     } 
 }

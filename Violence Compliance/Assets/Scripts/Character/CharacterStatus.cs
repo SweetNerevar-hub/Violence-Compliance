@@ -6,6 +6,7 @@ public class CharacterStatus : MonoBehaviour {
     private SpriteRenderer spriteRenderer;
     private AudioSource audioSource;
 
+    [SerializeField] private CameraShake mainCamera;
     [SerializeField] private Transform healthBar;
     [SerializeField] private Transform beamChargeBar;
     [SerializeField] private AudioClip shipExplosion;
@@ -28,31 +29,33 @@ public class CharacterStatus : MonoBehaviour {
     public void TakeDamage(float damage) {
         health -= damage;
 
-        Vector2 barSize = new Vector2(health * healthBarUnit, healthBar.localScale.y);
-        healthBar.localScale = barSize;
+        Vector2 healthBarSize = new Vector2(health * healthBarUnit, healthBar.localScale.y);
+        healthBar.localScale = healthBarSize;
 
-        if(health <= 0) {
+        mainCamera.CallCameraShake();
+
+        if (health <= 0) {
             StartCoroutine(PlayerDeath());
         }
     }
 
     public void UpdateBeamChargeBar(float chargeValue, float timeBetweenShots) {
-        Vector2 barSize = beamChargeBar.localScale;
+        Vector2 chargeBarSize = beamChargeBar.localScale;
 
         if (timeBetweenShots == 0) {
-            barSize = new Vector2(chargeValue * beamChargeBarUnit, barSize.y);
+            chargeBarSize = new Vector2(chargeValue * beamChargeBarUnit, chargeBarSize.y);
         }
 
         else {
-            barSize = new Vector2(timeBetweenShots * beamChargeBarUnit, barSize.y);
+            chargeBarSize = new Vector2(timeBetweenShots * beamChargeBarUnit, chargeBarSize.y);
         }
 
-        beamChargeBar.localScale = barSize;
+        beamChargeBar.localScale = chargeBarSize;
     }
 
     private IEnumerator PlayerDeath() {
         EventManager.Instance.Event_OnGameEnd(true);
-        UIManager.Instance.gameTimer = -1;
+        Destroy(UIManager.Instance.gameObject);
 
         GetComponent<EdgeCollider2D>().enabled = false;
 

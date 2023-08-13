@@ -588,7 +588,7 @@ AudioSource:
   m_GameObject: {fileID: 8198852978558728009}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24300002, guid: fc036cc019911b94899a7260d43d5aae, type: 2}
   m_audioClip: {fileID: 8300000, guid: 64ac27443a249ac43baf0e4988139dc1, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
@@ -709,6 +709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 0}
+  cameraSmoothing: 0
 --- !u!114 &9041553214045468656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -740,6 +741,7 @@ MonoBehaviour:
   healthBar: {fileID: 0}
   beamChargeBar: {fileID: 0}
   shipExplosion: {fileID: 8300000, guid: 1fb68cbb6346d2c41a022dba13dcab0f, type: 3}
+  hitAsteroidAmount: 0
 --- !u!1 &8979385622940578875
 GameObject:
   m_ObjectHideFlags: 0

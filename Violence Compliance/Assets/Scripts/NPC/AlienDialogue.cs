@@ -14,15 +14,16 @@ public class AlienDialogue : MonoBehaviour {
     }
 
     private void WhenEnemySpawned() {
+
+        // There will be a 1 in 4 chance that when an alien spawns it will communicate with the player
+        // This is avoid dialogue spam if aliens spawn frequently
         if (WillEnemyCommunicate()) {
             StartCoroutine(CallAlienDialogue());
         }
-
-        return;
     }
 
     private IEnumerator CallAlienDialogue() {
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(4f); // Allows for a cool effect where the aliens will cut off General Floyd's warnings of aliens, in order to communicate with the player
 
         int i = Random.Range(0, dialogueOnSpawn.Length);
         EventManager.Instance.Event_DisplayDialogue(_name, dialogueOnSpawn[i]);

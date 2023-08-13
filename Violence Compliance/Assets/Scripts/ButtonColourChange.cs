@@ -3,10 +3,12 @@ using UnityEngine.UI;
 
 public class ButtonColourChange : MonoBehaviour {
 
+    Button button;
     ColorBlock buttonColorBlock;
 
     private void Start() {
-        buttonColorBlock = GetComponent<Button>().colors;
+        button = GetComponent<Button>();
+        buttonColorBlock = button.colors;
     }
 
     private void Update() {
@@ -17,6 +19,6 @@ public class ButtonColourChange : MonoBehaviour {
         );
 
         buttonColorBlock.highlightedColor = randomColor;
-        GetComponent<Button>().colors = buttonColorBlock;
+        button.colors = buttonColorBlock;
     }
 }

@@ -30,6 +30,8 @@ public class Dialogue : MonoBehaviour {
     }
 
     public void InitDialogueText(string senderName, string dialogue) {
+
+        // If there is dialogue already being printed when more dialogue is being initilised, stop the current dialogue and print the new one
         if (animator.GetBool("IsDialogueActive")) {
             _name = senderName;
 
@@ -48,6 +50,7 @@ public class Dialogue : MonoBehaviour {
     IEnumerator DisplayDialogueText() {
         dialogueName.text = _name;
 
+        // This For loop prints each character of the dialogue
         for (int i = 0; i < charactersInDialogue.Length + 1; i++) {
             dialogueBox.text = _dialogue.Substring(0, i);
             audioSource.PlayOneShot(printTransmission);
@@ -67,10 +70,12 @@ public class Dialogue : MonoBehaviour {
         animator.SetBool("IsDialogueActive", false);
     }
 
-    public void OpenDialogue() {
+    // This method is referenced in the Animator, and is called when the dialogue box's opening animation is finished
+    public void OpenDialogueBox() {
         StartCoroutine(DisplayDialogueText());
     }
 
+    // This method is referenced in the Animator, and is called when the dialogue box is closed
     public void HideDialogueBox() {
         spriteRenderer.enabled = false;
     }
