@@ -46,7 +46,7 @@ public class GeneralFloydDialogue : MonoBehaviour {
             EventManager.Instance.Event_DisplayDialogue(_name, playerFailing[1]);
         }
 
-        else if(_score < 15 && timer == 50) {
+        else if(_score < 10 && timer == 50) {
             EventManager.Instance.Event_DisplayDialogue(_name, playerFailing[2]);
         }
     }

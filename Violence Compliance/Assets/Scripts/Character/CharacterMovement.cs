@@ -43,6 +43,12 @@ public class CharacterMovement : MonoBehaviour {
             StopAllCoroutines();
             StartCoroutine(HyperSpeedAudio(false));
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Destroy(GameObject.FindObjectOfType<UIManager>().gameObject);
+            Cursor.visible = true;
+            ToggleGameFade.Instance.CallSceneFadeOut(1);
+        }
     }
 
     private void MoveCharacter() {
